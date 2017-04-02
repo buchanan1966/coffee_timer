@@ -10,7 +10,7 @@ class Timer extends React.Component {
       date: new Date(),
       timeRemaining: 240,
       message: '',
-      started: false
+      step: 0
     };
   }
 
@@ -25,37 +25,46 @@ class Timer extends React.Component {
     clearInterval(this.timerID);
   }  
 
-  tick() {
-
+  tick() {    
     var tr = this.state.timeRemaining;
-    var message = '';
-    if(this.state.started){    
+    var cs = this.state.step
+    if( cs === 4) {
       if(tr > 0){
-        --tr;
-        if(tr > 195){
-          message = 'Fill water to 150g and stir.'
-        } else if(tr <= 195 && tr > 135){
-          message = 'Fill to 450g.'
-      } else if(tr <= 135){
-          message = 'Fill to 700g.'
-      }
+          --tr;
       } else {
-        message = 'Coffee is ready!';
+        ++ cs;
+        tr = 60
       }
-
-    } else {
-      message = "Prepare coffee and click start."
+    } else if( cs === 5) {
+      if(tr > 0){
+          --tr;
+      } else {
+        ++ cs;
+        tr = 135;
+      }
+    }else if( cs === 6) {
+      if(tr > 0){
+          --tr;
+      } else {
+        ++ cs;
+      }
     }
+
     this.setState({
-      date: new Date(),
-      timeRemaining: tr,
-      message: message
+      step: cs,
+      timeRemaining: tr
     });
   }
 
-  startTimer(){
+  nextStep(){
+    var step = this.state.step + 1
+    var tr = 0;
+    if(step === 4) {
+      tr = 45;
+    }
     this.setState({
-      started: true
+      step: step,
+      timeRemaining: tr
     });
     
   }
@@ -63,15 +72,70 @@ class Timer extends React.Component {
   render(){
     return (
       <div>
-        <h1>Hello, world!</h1>
-        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
-        <h2>There are {this.state.timeRemaining} seconds remaining.</h2>
-        <h2>{this.state.message}</h2>
+        <h1>Let's make some coffee!!!!</h1>
         {
-          this.state.started
-            ? null
-            : <button id='startButton' onClick={(e) => this.startTimer(e)}>Start</button>      
+          this.state.step === 0
+            ? <div> 
+                <h3>Fill and start your kettle.</h3>
+                <button id='startButton' onClick={(e) => this.nextStep(e)}>Next Stept</button>
+              </div>
+            : null
         }
+        {
+          this.state.step === 1
+            ? <div> 
+                <h3>Measure and grind 42g of coffee.</h3>
+                <button id='startButton' onClick={(e) => this.nextStep(e)}>Next Stept</button>
+              </div>
+            : null
+        }
+        {
+          this.state.step === 2
+            ?  <div>
+                  <h3>Once water is just off boil, place filter in Chemex and pour a good amount over the filter.</h3>
+                  <button id='startButton' onClick={(e) => this.nextStep(e)}>Next Stept</button>
+                </div>
+            : null
+        }
+        {
+          this.state.step === 3
+            ? <div>
+                <h3>Pour out water, add ground coffee, place on scale and zero out.</h3>
+                <button id='startButton' onClick={(e) => this.nextStep(e)}>Next Stept</button>
+              </div>
+            : null
+        }
+        {
+          this.state.step === 4
+            ? <div>
+                <h3>Fill to 150g and stir.</h3>
+                <h3>Wait {this.state.timeRemaining} seconds.</h3>
+              </div>
+            : null
+        }
+        {
+          this.state.step === 5
+            ? <div>
+                <h3>Fill to 450g.</h3>
+                <h3>Wait {this.state.timeRemaining} seconds.</h3>
+              </div>
+            : null
+        }
+        {
+          this.state.step === 6
+            ? <div>
+                <h3>Fill to 700g.</h3>
+                <h3>Wait {this.state.timeRemaining} seconds.</h3>
+              </div>
+            : null
+        }
+        {
+          this.state.step === 7
+            ? <div>
+                <h3>Remove and dispose of filer and enjoy.</h3>
+              </div>
+            : null
+        }      
       </div>
     );
   }
